@@ -11,7 +11,7 @@
 Genetic algorithm for city design main algorithm code.
 
 By: Andres Rico - aricom@mit.edu
-MIT Media Lab - City Science Group
+Visitng Student MIT Media Lab - City Science Group
                                                                                       """
 
 
