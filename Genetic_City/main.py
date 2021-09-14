@@ -20,7 +20,8 @@ Genetic algorithm for city design main algorithm code.
 
 By: Andres Rico - aricom@mit.edu
 MIT Media Lab - City Science Group
-                                    """                                                  """
+
+"""
 
 import numpy as np                                                              #Matrix and array handling.
 import matplotlib.pyplot as plt                                                 #Plotting
@@ -31,13 +32,14 @@ from evaluator import evaluate                                                  
 from progressbar import printProgressBar                                        #Helps with progress bar in terminal.
 from crossfunctions import cross_individuals                                    #Functions for crossing individuals.
 from mutation_functions import mutate_individuals                               #Functions for mutating individuals.
-from selectionfunctions import select_cities                                    #Functions for best individual selection.
+from selectionfunctions import *                                 #Functions for best individual selection.
 
-population_size = 6 #Needs to be an even number above 4
-city_size = 3
-mutation_prob = .9 #Must be between 0 - 1
-generations = 100 #Specify number of desired generations
-cross_probability = .5 #Uniform crosses
+population_size = 5000 #Needs to be an even number above 4
+tournament_individuals = 2 #Needs to be between 2-half of the population.
+city_size = 16
+mutation_prob = .3 #Must be between 0 - 1
+generations = 5000 #Specify number of desired generations
+cross_probability = .3 #Uniform crosses
 
 population_matrix = np.arange(city_size * city_size) #Declare different matrix variables for storing populations withing process.
 evaluation_vector = np.arange(population_size) #Evaluation vector used for selection.
@@ -62,7 +64,7 @@ printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = '
 for generation in range(0, generations):
 
     #Selection
-    selected_matrix = select_cities(evaluation_vector, population_matrix, population_size, city_size)
+    selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, city_size,best_found_indiv,best_found_evaluation)
 
     #Cross
     crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, city_size)

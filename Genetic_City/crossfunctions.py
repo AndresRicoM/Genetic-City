@@ -30,8 +30,11 @@ def cross(parent1, parent2, probability ): #Function takes two parents as inputs
 
         return fullarray
 
-def cross_individuals(input_city_pop, crossprob, population, citysize): #Complete cross fucntion for an entire population. 
+def cross_individuals(input_city_pop, crossprob, population, citysize): #Complete cross fucntion for an entire population.
     printProgressBar(0, population, prefix = 'Population Cross Progress:', suffix = 'Complete', length = 50)
+    for i in range(0,50):
+        np.random.shuffle(input_city_pop)
+
     crossed_population = np.zeros((population, citysize*citysize))
     for crosses in range(0,population,2):
         newchildren = cross(input_city_pop[crosses, :], input_city_pop[crosses + 1, :], crossprob)
