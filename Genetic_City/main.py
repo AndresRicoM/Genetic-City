@@ -32,13 +32,14 @@ from evaluator import evaluate                                                  
 from progressbar import printProgressBar                                        #Helps with progress bar in terminal.
 from crossfunctions import cross_individuals                                    #Functions for crossing individuals.
 from mutation_functions import mutate_individuals                               #Functions for mutating individuals.
-from selectionfunctions import *                                 #Functions for best individual selection.
+from selectionfunctions import *                                                #Functions for best individual selection.
+from plotting import *
 
 population_size = 5000 #Needs to be an even number above 4
 tournament_individuals = 2 #Needs to be between 2-half of the population.
-city_size = 16
+city_size = 4
 mutation_prob = .3 #Must be between 0 - 1
-generations = 5000 #Specify number of desired generations
+generations = 10 #Specify number of desired generations
 cross_probability = .3 #Uniform crosses
 
 population_matrix = np.arange(city_size * city_size) #Declare different matrix variables for storing populations withing process.
@@ -64,7 +65,8 @@ printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = '
 for generation in range(0, generations):
 
     #Selection
-    selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, city_size,best_found_indiv,best_found_evaluation)
+    #selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, city_size,best_found_indiv,best_found_evaluation)
+    selected_matrix = select_cities_tournament(evaluation_vector, population_matrix, population_size, city_size,tournament_individuals)
 
     #Cross
     crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, city_size)
@@ -82,6 +84,8 @@ for generation in range(0, generations):
     print('THE HIGHEST EVALUATION OF THIS GENERATION WAS: ' , evaluation_vector[np.argmax(evaluation_vector)])
     print('THIS IS THE BEST CITY DESIGN')
     print(current_best_individual)
+    city_plot(current_best_individual, city_size)
+
 
     #Save Best Individual if Better than Last
     if evaluation_vector[np.argmax(evaluation_vector)] > best_found_evaluation:
@@ -95,9 +99,6 @@ print(best_found_indiv)
 print('WITH AN EVALUATION OF:')
 print(best_found_evaluation)
 
-plt.figure(1)
-plt.plot(gen, best_found_ev)
-plt.title('Best Found Curve')
-plt.ylabel('Evaluation')
-plt.xlabel('Generation')
-plt.show()
+
+plot_best_found_curve(gen, best_found_ev)
+#city_plot(best_found_indiv, city_size)
