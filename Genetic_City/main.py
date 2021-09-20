@@ -84,7 +84,7 @@ for generation in range(0, generations):
     print('THE HIGHEST EVALUATION OF THIS GENERATION WAS: ' , evaluation_vector[np.argmax(evaluation_vector)])
     print('THIS IS THE BEST CITY DESIGN')
     print(current_best_individual)
-    city_plot(current_best_individual, city_size)
+    #city_plot(current_best_individual, city_size)
 
 
     #Save Best Individual if Better than Last
