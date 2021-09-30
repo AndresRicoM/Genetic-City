@@ -26,7 +26,7 @@ def city_plot(input_city, size):
     x = np.arange(0, size+1, 1)  # len = 11
     y = np.arange(0, size+1, 1)  # len = 7
     fig, ax = plt.subplots()
-    ax.pcolormesh(x, y, Z)
+    ax.pcolormesh(x, y, Z, cmap='rainbow')
     plt.show()
 
     return

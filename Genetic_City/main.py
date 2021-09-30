@@ -28,77 +28,81 @@ import matplotlib.pyplot as plt                                                 
 from numpy import empty
 from citygenerationfunctions import create_cities                               #Functions for creating new city arrays.
 from evaluator import evaluate_cities                                           #Functions for evaluation of cities.
-from evaluator import evaluate                                                  #Functions for evaluation of cities.
+from evaluator import *                                                 #Functions for evaluation of cities.
 from progressbar import printProgressBar                                        #Helps with progress bar in terminal.
 from crossfunctions import cross_individuals                                    #Functions for crossing individuals.
 from mutation_functions import mutate_individuals                               #Functions for mutating individuals.
 from selectionfunctions import *                                                #Functions for best individual selection.
 from plotting import *
 
-population_size = 5000 #Needs to be an even number above 4
+population_size = 1000 #Needs to be an even number above 4
 tournament_individuals = 2 #Needs to be between 2-half of the population.
-city_size = 4
+block_size = 4
+grid_size = 3 #Square dimension for grid.
 mutation_prob = .3 #Must be between 0 - 1
-generations = 10 #Specify number of desired generations
+generations = 30 #Specify number of desired generations
 cross_probability = .3 #Uniform crosses
 
-population_matrix = np.arange(city_size * city_size) #Declare different matrix variables for storing populations withing process.
+population_matrix = np.arange(block_size * block_size) #Declare different matrix variables for storing populations withing process.
 evaluation_vector = np.arange(population_size) #Evaluation vector used for selection.
-selected_matrix = np.zeros((population_size, city_size*city_size))
-crossed_population_matrix = np.zeros((population_size, city_size*city_size))
-mutateded_population_matrix = np.zeros((population_size, city_size*city_size))
+selected_matrix = np.zeros((population_size, block_size*block_size))
+crossed_population_matrix = np.zeros((population_size, block_size*block_size))
+mutateded_population_matrix = np.zeros((population_size, block_size*block_size))
 best_found_ev = np.zeros(generations) #For Graph
 gen = np.arange(generations) + 1
-best_found_indiv = np.zeros(city_size * city_size)
+best_found_indiv = np.zeros(block_size * block_size)
 best_found_evaluation = 0 #Saves best solution
 
-first_population_flag = True
+final_blocks = []
 
-# Create New Population #################################
-population_matrix = create_cities(population_size, city_size)
+for blocks in range(grid_size*grid_size):
 
-# Evaluation of First Population ########################
-evaluation_vector = evaluate_cities(population_matrix, population_size)
+    # Create New Population #################################
+    population_matrix = create_cities(population_size, block_size) #Creates new block.
 
-#START OF GENERATON LOOP ################################################################################################################
-printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = 'Complete', length = 50)
-for generation in range(0, generations):
+    # Evaluation of First Population ########################
+    evaluation_vector = evaluate_cities(population_matrix, population_size)
 
-    #Selection
-    #selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, city_size,best_found_indiv,best_found_evaluation)
-    selected_matrix = select_cities_tournament(evaluation_vector, population_matrix, population_size, city_size,tournament_individuals)
+    #START OF GENERATON LOOP ################################################################################################################
+    printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = 'Complete', length = 50)
+    for generation in range(0, generations):
 
-    #Cross
-    crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, city_size)
+        #Selection
+        selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, block_size,best_found_indiv,best_found_evaluation)
+        #selected_matrix = select_cities_tournament(evaluation_vector, population_matrix, population_size, block_size,tournament_individuals)
 
-    #Mutation
-    mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, city_size)
+        #Cross
+        crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, block_size)
 
-    # Evaluation of Population
-    evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size)
+        #Mutation
+        mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, block_size)
 
-
-    current_best_individual = mutateded_population_matrix[np.argmax(evaluation_vector),:] #Print best individual from population.
-    best_found_ev[generation] = evaluation_vector[np.argmax(evaluation_vector)]
-    print('FINISHED GENERATION # ' , generation + 1 , 'OF' , generations) #Counts Generations.
-    print('THE HIGHEST EVALUATION OF THIS GENERATION WAS: ' , evaluation_vector[np.argmax(evaluation_vector)])
-    print('THIS IS THE BEST CITY DESIGN')
-    print(current_best_individual)
-    #city_plot(current_best_individual, city_size)
+        # Evaluation of Population
+        evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size)
 
 
-    #Save Best Individual if Better than Last
-    if evaluation_vector[np.argmax(evaluation_vector)] > best_found_evaluation:
-        best_found_evaluation = evaluation_vector[np.argmax(evaluation_vector)]
-        print(best_found_evaluation)
-        for times in range (0, city_size * city_size):
-            best_found_indiv[times] = current_best_individual[times]
+        current_best_individual = mutateded_population_matrix[np.argmax(evaluation_vector),:] #Print best individual from population.
+        best_found_ev[generation] = evaluation_vector[np.argmax(evaluation_vector)]
+        print('FINISHED GENERATION # ' , generation + 1 , 'OF' , generations) #Counts Generations.
+        print('THE HIGHEST EVALUATION OF THIS GENERATION WAS: ' , evaluation_vector[np.argmax(evaluation_vector)])
+        print('THIS IS THE BEST CITY DESIGN')
+        print(current_best_individual)
+        #city_plot(current_best_individual, block_size)
 
-print('THE BEST INDIVIDUAL OF ALL WAS:') #Prints and plots final results of algorithm.
-print(best_found_indiv)
-print('WITH AN EVALUATION OF:')
-print(best_found_evaluation)
+        #Save Best Individual if Better than Last
+        if evaluation_vector[np.argmax(evaluation_vector)] > best_found_evaluation:
+            best_found_evaluation = evaluation_vector[np.argmax(evaluation_vector)]
+            print(best_found_evaluation)
+            for times in range (0, block_size * block_size):
+                best_found_indiv[times] = current_best_individual[times]
+
+    print('THE BEST BLOCK DESIGN OF ALL WAS:') #Prints and plots final results of algorithm.
+    print(best_found_indiv)
+    print('WITH AN EVALUATION OF:')
+    print(best_found_evaluation)
+
+    final_blocks = np.append(final_blocks, best_found_indiv)
 
 
-plot_best_found_curve(gen, best_found_ev)
-#city_plot(best_found_indiv, city_size)
+#plot_best_found_curve(gen, best_found_ev)
+city_plot(final_blocks, (block_size*grid_size))
