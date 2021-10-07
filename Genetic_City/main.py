@@ -26,7 +26,7 @@ MIT Media Lab - City Science Group
 import numpy as np                                                              #Matrix and array handling.
 import matplotlib.pyplot as plt                                                 #Plotting
 from numpy import empty
-from citygenerationfunctions import create_cities                               #Functions for creating new city arrays.
+from citygenerationfunctions import *                                           #Functions for creating new city arrays.
 from evaluator import evaluate_cities                                           #Functions for evaluation of cities.
 from evaluator import *                                                 #Functions for evaluation of cities.
 from progressbar import printProgressBar                                        #Helps with progress bar in terminal.
@@ -40,8 +40,9 @@ tournament_individuals = 2 #Needs to be between 2-half of the population.
 block_size = 4
 grid_size = 3 #Square dimension for grid.
 mutation_prob = .3 #Must be between 0 - 1
-generations = 30 #Specify number of desired generations
+generations = 5 #Specify number of desired generations
 cross_probability = .3 #Uniform crosses
+building_types = 3 # [1 = Park, 2 = Office, 3 = Residential]
 
 population_matrix = np.arange(block_size * block_size) #Declare different matrix variables for storing populations withing process.
 evaluation_vector = np.arange(population_size) #Evaluation vector used for selection.
@@ -58,7 +59,7 @@ final_blocks = []
 for blocks in range(grid_size*grid_size):
 
     # Create New Population #################################
-    population_matrix = create_cities(population_size, block_size) #Creates new block.
+    population_matrix = create_cities(population_size, block_size, building_types) #Creates new block.
 
     # Evaluation of First Population ########################
     evaluation_vector = evaluate_cities(population_matrix, population_size)
@@ -75,7 +76,7 @@ for blocks in range(grid_size*grid_size):
         crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, block_size)
 
         #Mutation
-        mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, block_size)
+        mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, block_size, building_types)
 
         # Evaluation of Population
         evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size)
@@ -102,6 +103,7 @@ for blocks in range(grid_size*grid_size):
     print(best_found_evaluation)
 
     final_blocks = np.append(final_blocks, best_found_indiv)
+    np.savetxt('city3.txt',final_blocks,delimiter=',')
 
 
 #plot_best_found_curve(gen, best_found_ev)

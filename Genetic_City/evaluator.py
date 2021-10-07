@@ -39,13 +39,23 @@ def evaluate_balanced(evcity):
         #print(dictionary[1])
         if type in evcity:
             total_evaluation = total_evaluation + (dictionary[type] * wheights[type - 1]) #Objective fucntion. This function will change as real city metrics are added to algorithm.
-    return total_evaluation #This function should try to give an output of a matrix containing all nines or close to all nines.
+    return total_evaluation
+
+def evaluate_simplethree(evcity):
+    unique, counts = np.unique(evcity,return_index=False, return_inverse=False, return_counts=True, axis=None)
+    if counts.size < 3:
+        evaluation = 0
+    else:
+        evaluation = 100 - abs(counts[0]- counts[1]) - abs(counts[0]- counts[2]) - abs(counts[0]- counts[2])
+    return evaluation #This function should try to give an output of a matrix containing all nines or close to all nines.
 
 
 def evaluate_cities(city_to_ev, population ): #Complete evaluation fucntion for looping through every individual of a population.
     printProgressBar(0, population, prefix = 'Population Evaluation Progress:', suffix = 'Complete', length = 50)
     ev_vector = np.arange(population)
     for pop in range(0, population):
-        ev_vector[pop] = evaluate_balanced(city_to_ev[pop,:]) #Change line to change to desired weight function.
+        ev_vector[pop] = evaluate_simplethree(city_to_ev[pop,:]) #Change line to change to desired weight function.
         printProgressBar(pop + 1, population, prefix = 'Population Evaluation Progress:', suffix = 'Complete', length = 50)
     return ev_vector #Returns evaluation vector.
+
+#print(evaluate_simplethree([2,3,3,2,2,2,3,3,3]))
