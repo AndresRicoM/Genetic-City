@@ -54,57 +54,64 @@ gen = np.arange(generations) + 1
 best_found_indiv = np.zeros(block_size * block_size)
 best_found_evaluation = 0 #Saves best solution
 
-final_blocks = []
+final_blocks = np.zeros((block_size*grid_size,block_size*grid_size ))
 
-for blocks in range(grid_size*grid_size):
+for column_blocks in range(grid_size):
 
-    # Create New Population #################################
-    population_matrix = create_cities(population_size, block_size, building_types) #Creates new block.
+    for row_blocks in range(grid_size):
+        print('THIS IS BLOCK #:', row_blocks)
 
-    # Evaluation of First Population ########################
-    evaluation_vector = evaluate_cities(population_matrix, population_size)
+        # Create New Population #################################
+        #print('NEW POPULATION!')
+        population_matrix = create_cities(population_size, block_size, building_types) #Creates new block.
 
-    #START OF GENERATON LOOP ################################################################################################################
-    printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = 'Complete', length = 50)
-    for generation in range(0, generations):
+        # Evaluation of First Population ########################
+        evaluation_vector = evaluate_cities(population_matrix, population_size)
 
-        #Selection
-        selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, block_size,best_found_indiv,best_found_evaluation)
-        #selected_matrix = select_cities_tournament(evaluation_vector, population_matrix, population_size, block_size,tournament_individuals)
+        #START OF GENERATON LOOP ################################################################################################################
+        printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = 'Complete', length = 50)
+        for generation in range(0, generations):
 
-        #Cross
-        crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, block_size)
+            #Selection
+            selected_matrix = select_cities_rough(evaluation_vector, population_matrix, population_size, block_size,best_found_indiv,best_found_evaluation)
+            #selected_matrix = select_cities_tournament(evaluation_vector, population_matrix, population_size, block_size,tournament_individuals)
 
-        #Mutation
-        mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, block_size, building_types)
+            #Cross
+            crossed_population_matrix = cross_individuals(selected_matrix, cross_probability, population_size, block_size)
 
-        # Evaluation of Population
-        evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size)
+            #Mutation
+            mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, block_size, building_types)
 
-
-        current_best_individual = mutateded_population_matrix[np.argmax(evaluation_vector),:] #Print best individual from population.
-        best_found_ev[generation] = evaluation_vector[np.argmax(evaluation_vector)]
-        print('FINISHED GENERATION # ' , generation + 1 , 'OF' , generations) #Counts Generations.
-        print('THE HIGHEST EVALUATION OF THIS GENERATION WAS: ' , evaluation_vector[np.argmax(evaluation_vector)])
-        print('THIS IS THE BEST CITY DESIGN')
-        print(current_best_individual)
-        #city_plot(current_best_individual, block_size)
-
-        #Save Best Individual if Better than Last
-        if evaluation_vector[np.argmax(evaluation_vector)] > best_found_evaluation:
-            best_found_evaluation = evaluation_vector[np.argmax(evaluation_vector)]
-            print(best_found_evaluation)
-            for times in range (0, block_size * block_size):
-                best_found_indiv[times] = current_best_individual[times]
-
-    print('THE BEST BLOCK DESIGN OF ALL WAS:') #Prints and plots final results of algorithm.
-    print(best_found_indiv)
-    print('WITH AN EVALUATION OF:')
-    print(best_found_evaluation)
-
-    final_blocks = np.append(final_blocks, best_found_indiv)
-    np.savetxt('city3.txt',final_blocks,delimiter=',')
+            # Evaluation of Population
+            evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size)
 
 
+            current_best_individual = mutateded_population_matrix[np.argmax(evaluation_vector),:] #Print best individual from population.
+            best_found_ev[generation] = evaluation_vector[np.argmax(evaluation_vector)]
+            """print('FINISHED GENERATION # ' , generation + 1 , 'OF' , generations) #Counts Generations.
+            print('THE HIGHEST EVALUATION OF THIS GENERATION WAS: ' , evaluation_vector[np.argmax(evaluation_vector)])
+            print('THIS IS THE BEST CITY DESIGN')
+            print(current_best_individual)"""
+            #city_plot(current_best_individual, block_size)
+
+            #Save Best Individual if Better than Last
+            if evaluation_vector[np.argmax(evaluation_vector)] > best_found_evaluation:
+                best_found_evaluation = evaluation_vector[np.argmax(evaluation_vector)]
+                print(best_found_evaluation)
+                for times in range (0, block_size * block_size):
+                    best_found_indiv[times] = current_best_individual[times]
+
+        print('THE BEST BLOCK DESIGN OF ALL WAS:') #Prints and plots final results of algorithm.
+        print(best_found_indiv)
+        print('WITH AN EVALUATION OF:')
+        print(best_found_evaluation)
+
+        final_blocks[row_blocks*block_size:(row_blocks*block_size)+block_size, column_blocks*block_size:(column_blocks*block_size)+block_size] = np.reshape(best_found_indiv, (block_size, block_size))
+        best_found_indiv = np.zeros(block_size * block_size)
+        best_found_evaluation = 0
+        #np.savetxt('city3.txt',final_blocks,delimiter=',')
+
+
+print(final_blocks)
 #plot_best_found_curve(gen, best_found_ev)
 city_plot(final_blocks, (block_size*grid_size))
