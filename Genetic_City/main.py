@@ -40,9 +40,9 @@ tournament_individuals = 2 #Needs to be between 2-half of the population.
 block_size = 4
 grid_size = 3 #Square dimension for grid.
 mutation_prob = .3 #Must be between 0 - 1
-generations = 5 #Specify number of desired generations
+generations = 10 #Specify number of desired generations
 cross_probability = .3 #Uniform crosses
-building_types = 3 # [1 = Park, 2 = Office, 3 = Residential]
+building_types = 3 # [1 = Office, 2 = Park, 3 = Residential]
 
 population_matrix = np.arange(block_size * block_size) #Declare different matrix variables for storing populations withing process.
 evaluation_vector = np.arange(population_size) #Evaluation vector used for selection.
@@ -53,6 +53,8 @@ best_found_ev = np.zeros(generations) #For Graph
 gen = np.arange(generations) + 1
 best_found_indiv = np.zeros(block_size * block_size)
 best_found_evaluation = 0 #Saves best solution
+
+distance_table = look_up_table(block_size)
 
 final_blocks = np.zeros((block_size*grid_size,block_size*grid_size ))
 
@@ -66,7 +68,7 @@ for column_blocks in range(grid_size):
         population_matrix = create_cities(population_size, block_size, building_types) #Creates new block.
 
         # Evaluation of First Population ########################
-        evaluation_vector = evaluate_cities(population_matrix, population_size)
+        evaluation_vector = evaluate_cities(population_matrix, population_size, distance_table)
 
         #START OF GENERATON LOOP ################################################################################################################
         printProgressBar(0, population_size, prefix = 'Generation Progress:', suffix = 'Complete', length = 50)
@@ -83,7 +85,7 @@ for column_blocks in range(grid_size):
             mutateded_population_matrix = mutate_individuals(crossed_population_matrix, mutation_prob, population_size, block_size, building_types)
 
             # Evaluation of Population
-            evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size)
+            evaluation_vector = evaluate_cities(mutateded_population_matrix, population_size, distance_table)
 
 
             current_best_individual = mutateded_population_matrix[np.argmax(evaluation_vector),:] #Print best individual from population.
@@ -112,6 +114,6 @@ for column_blocks in range(grid_size):
         #np.savetxt('city3.txt',final_blocks,delimiter=',')
 
 
-print(final_blocks)
+#print(final_blocks)
 #plot_best_found_curve(gen, best_found_ev)
 city_plot(final_blocks, (block_size*grid_size))
