@@ -55,19 +55,32 @@ def evaluate_simplethree(evcity, look_up):
     if counts.size < 3:
         evaluation = 0
 
+    elif counts[0] < 3 or counts[1] < 4 or counts[2] < 4:
+        evaluation = 0
+
     else:
-        evaluation = 1000 - abs(counts[0]- counts[1]) - abs(counts[0]- counts[2]) - 3*abs(counts[1]- counts[2])
+        evaluation = 1000
+        homes = np.where(evcity == 3)
+        offices = np.where(evcity == 1)
+        parks = np.where(evcity == 2)
 
+        for home in range(int(homes[0].shape[0])):
+            for office in range(offices[0].shape[0]):
+                evaluation = evaluation - look_up[homes[0][home], offices[0][office]]
+            for park in range(parks[0].shape[0]):
+                evaluation = evaluation - look_up[homes[0][home], parks[0][park]]
 
-    homes = np.where(evcity == 3)
-    offices = np.where(evcity == 1)
+        for park in range(int(parks[0].shape[0])):
+            for office in range(offices[0].shape[0]):
+                evaluation = evaluation - look_up[parks[0][park], offices[0][office]]
 
-    for home in range(int(homes[0].shape[0])):
-        for office in range(offices[0].shape[0]):
-            evaluation = evaluation - look_up[homes[0][home], offices[0][office]]
 
     return evaluation
 
+"""
+else:
+    evaluation = 1000 - abs(counts[0]- counts[1]) - abs(counts[0]- counts[2]) - abs(counts[1]- counts[2])
+"""
 
 def evaluate_cities(city_to_ev, population, look_up ): #Complete evaluation fucntion for looping through every individual of a population.
     printProgressBar(0, population, prefix = 'Population Evaluation Progress:', suffix = 'Complete', length = 50)

@@ -38,8 +38,8 @@ from plotting import *
 population_size = 1000 #Needs to be an even number above 4
 tournament_individuals = 2 #Needs to be between 2-half of the population.
 block_size = 4
-grid_size = 3 #Square dimension for grid.
-mutation_prob = .3 #Must be between 0 - 1
+grid_size = 10 #Square dimension for grid.
+mutation_prob = .5 #Must be between 0 - 1
 generations = 10 #Specify number of desired generations
 cross_probability = .3 #Uniform crosses
 building_types = 3 # [1 = Office, 2 = Park, 3 = Residential]
@@ -116,4 +116,4 @@ for column_blocks in range(grid_size):
 
 #print(final_blocks)
 #plot_best_found_curve(gen, best_found_ev)
-city_plot(final_blocks, (block_size*grid_size))
+city_plot(final_blocks, block_size, grid_size)
