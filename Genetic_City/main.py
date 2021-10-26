@@ -38,10 +38,10 @@ from plotting import *
 population_size = 1000 #Needs to be an even number above 4
 tournament_individuals = 2 #Needs to be between 2-half of the population.
 block_size = 4
-grid_size = 10 #Square dimension for grid.
-mutation_prob = .5 #Must be between 0 - 1
-generations = 10 #Specify number of desired generations
-cross_probability = .3 #Uniform crosses
+grid_size = 3 #Square dimension for grid.
+mutation_prob = .8 #Must be between 0 - 1
+generations = 15 #Specify number of desired generations
+cross_probability = .5 #Uniform crosses
 building_types = 3 # [1 = Office, 2 = Park, 3 = Residential]
 
 population_matrix = np.arange(block_size * block_size) #Declare different matrix variables for storing populations withing process.
@@ -95,6 +95,8 @@ for column_blocks in range(grid_size):
             print('THIS IS THE BEST CITY DESIGN')
             print(current_best_individual)"""
             #city_plot(current_best_individual, block_size)
+            final_blocks[row_blocks*block_size:(row_blocks*block_size)+block_size, column_blocks*block_size:(column_blocks*block_size)+block_size] = np.reshape(best_found_indiv, (block_size, block_size))
+            np.savetxt('/Users/AndresRico/Desktop/working/Genetic-City/Genetic_City/plotting/block'+str(column_blocks)+'_'+str(row_blocks)+'gen'+str(generation)+'.txt',final_blocks,delimiter=',')
 
             #Save Best Individual if Better than Last
             if evaluation_vector[np.argmax(evaluation_vector)] > best_found_evaluation:
@@ -111,7 +113,7 @@ for column_blocks in range(grid_size):
         final_blocks[row_blocks*block_size:(row_blocks*block_size)+block_size, column_blocks*block_size:(column_blocks*block_size)+block_size] = np.reshape(best_found_indiv, (block_size, block_size))
         best_found_indiv = np.zeros(block_size * block_size)
         best_found_evaluation = 0
-        #np.savetxt('city3.txt',final_blocks,delimiter=',')
+        np.savetxt('city_mambers.txt',final_blocks,delimiter=',')
 
 
 #print(final_blocks)
